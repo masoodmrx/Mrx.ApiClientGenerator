@@ -1,13 +1,11 @@
-﻿using Mrx.ApiClientGenerator.Models;
-using NJsonSchema.CodeGeneration;
+﻿using Mrx.ApiClientGenerator.Dart.NetFramework;
+using Mrx.ApiClientGenerator.Models;
 using NJsonSchema.CodeGeneration.TypeScript;
 using NSwag;
-using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.TypeScript;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -23,8 +21,8 @@ namespace Mrx.ApiClientGenerator.Helpers
         // baseUrl
         public static async Task<bool> Start(ProfileModel model)
         {
-            try
-            {
+            //try
+            //{
                 switch (model.Language)
                 {
                     case Language.TypeScript:
@@ -34,17 +32,22 @@ namespace Mrx.ApiClientGenerator.Helpers
                         await GenerateCSharpClient(model);
                         break;
                     case Language.Dart:
-                        await SwaggerCodegen.GenerateDartClient(model);
+                        await GenerateDartClient(model);
+                        //await SwaggerCodegen.GenerateDartClient(model);
                         break;
                 }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return false;
+            //}
             return true;
         }
 
+        private async static Task GenerateDartClient(ProfileModel model)
+        {
+            await DartApiClientGeneratorHelper.StartAsync(model.Url, model.GeneratePath, model.ApiName);
+        }
         private async static Task GenerateTypeScriptClient(ProfileModel model)
         {
             GenerateClient(

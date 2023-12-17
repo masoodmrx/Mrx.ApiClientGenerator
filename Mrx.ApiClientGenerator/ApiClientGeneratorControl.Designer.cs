@@ -50,6 +50,7 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.lblLoading = new System.Windows.Forms.Label();
             this.cbbTypeScriptDateTimeType = new System.Windows.Forms.ComboBox();
+            this.txtProfileApiName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnDelete
@@ -253,6 +254,14 @@
             this.cbbTypeScriptDateTimeType.Size = new System.Drawing.Size(130, 21);
             this.cbbTypeScriptDateTimeType.TabIndex = 3;
             // 
+            // txtProfileApiName
+            // 
+            this.txtProfileApiName.Location = new System.Drawing.Point(465, 32);
+            this.txtProfileApiName.Name = "txtProfileApiName";
+            this.txtProfileApiName.Size = new System.Drawing.Size(130, 20);
+            this.txtProfileApiName.TabIndex = 0;
+            this.txtProfileApiName.TextChanged += new System.EventHandler(this.txtProfileName_TextChanged);
+            // 
             // ApiClientGeneratorControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -276,6 +285,7 @@
             this.Controls.Add(this.txtBaseUrl);
             this.Controls.Add(this.txtGeneratePath);
             this.Controls.Add(this.txtUrl);
+            this.Controls.Add(this.txtProfileApiName);
             this.Controls.Add(this.txtProfileName);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.btnDelete);
@@ -311,5 +321,6 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label lblLoading;
         private System.Windows.Forms.ComboBox cbbTypeScriptDateTimeType;
+        private System.Windows.Forms.TextBox txtProfileApiName;
     }
 }

@@ -1,32 +1,33 @@
 ﻿using CaseExtensions;
 using Mrx.Common.Extensions;
-using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-string inPath = @"D:\Programing\Projects\IraniView\Source\IraniView.App\irani_view\lib\swaggers\IraniViewApi.json";
+string inputFile = @"D:\Programing\Projects\IraniView\Source\IraniView.App\irani_view\lib\swaggers\IraniViewApi.json";
+string name = "IraniViewApi";
 //string outPath = @"D:\Programing\Projects\App Utilities\Mrx.ApiClientGenerator Dart\dart project\api_test\lib\";
-string outPath = @"D:\Programing\Projects\IraniView\Source\IraniView.App\irani_view\lib\Swagger\";
-string outApiPath = Path.Combine(outPath, "IraniViewApi.swagger.dart");
-string outApiEnumsPath = Path.Combine(outPath, "IraniViewApi.swagger.enums.dart");
-string outputApi = @"// ignore_for_file: non_constant_identifier_names, constant_identifier_names, curly_braces_in_flow_control_structures
+string outputDirectory = @"D:\Programing\Projects\IraniView\Source\IraniView.App\irani_view\lib\Swagger\";
+string outApiPath = Path.Combine(outputDirectory, $"{name}.swagger.dart");
+string outApiEnumsPath = Path.Combine(outputDirectory, $"{name}.swagger.enums.dart");
+string outputApi = @$"// ignore_for_file: non_constant_identifier_names, constant_identifier_names, curly_braces_in_flow_control_structures
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:irani_view/Swagger/IraniViewApi.swagger.enums.dart' as enums;
+import 'package:irani_view/Swagger/{name}.swagger.enums.dart' as enums;
 
-extension DynamicExtension on dynamic {
-  double? toDouble() {
+extension DynamicExtension on dynamic {{
+  double? toDouble() {{
     return (this as int?)?.toDouble();
-  }
-}
+  }}
+}}
 ";
 string outputApiEnums = @"// ignore_for_file: non_constant_identifier_names, constant_identifier_names
 ";
-string json = File.ReadAllText(inPath);
+string json = File.ReadAllText(inputFile);
 var obj = JsonSerializer.Deserialize<dynamic>(json);
 JsonNode data = JsonNode.Parse(json);
-var aa = data["definitions.{className}OfAccountGetProfileOutputApiModel"];
+//var aa = data["definitions.{className}OfAccountGetProfileOutputApiModel"];
 //.GetType().GetProperties().Select(p => p.Name).ToList()
 //var a = data["definitions"].;
 
@@ -34,7 +35,7 @@ var aa = data["definitions.{className}OfAccountGetProfileOutputApiModel"];
 Static.Definitions = data["definitions"].AsObject().ToArray();
 Static.ModelsDefinitions = Static.Definitions.Where(p => p.Value["enum"] == null).ToArray();
 Static.EnumsDefinitions = Static.Definitions.Where(p => p.Value["enum"] != null).ToArray();
-Static.Enums = Static.EnumsDefinitions.Select(p => p.Key).ToArray();
+Static.Enums = Static.EnumsDefinitions.Select(p => p.Key).ToList();
 
 //var paths = data["paths"].AsObject().ToArray();
 var paths = data["paths"].AsObject().ToArray()
@@ -49,17 +50,22 @@ var paths = data["paths"].AsObject().ToArray()
             {
                 Name = m.Key,
                 Tag = m.Value?["tags"]?.AsArray().Select(p => p.GetValue<string>()).FirstOrDefault(),
-                OperationId = (string)m.Value["operationId"],
-                Parameters = m.Value["parameters"]?.AsArray().ToArray().Select(pr => new PathMethodParameterModel
+                OperationId = (string?)m.Value?["operationId"],
+                Parameters = m.Value["parameters"]?.AsArray().ToArray().Select(pr =>
                 {
-                    Name = (string)pr["name"],
-                    In = (string)pr["in"],
-                    Type = (string?)pr["type"],
-                    Format = (string?)pr["format"],
-                    Required = (bool?)pr["required"],
-                    IsNullable = (bool)pr["x-nullable"],
-                    SchemaRef = ((string?)pr?["schema"]?["$ref"])?.Replace("#/definitions/", ""),
-                    XSchemaRef = ((string?)pr?["x-schema"]?["$ref"])?.Replace("#/definitions/", ""),
+                    var xSchemaRef = ((string?)pr?["x-schema"]?["$ref"])?.Replace("#/definitions/", "");
+                    return new PathMethodParameterModel
+                    {
+                        Name = (string)pr["name"],
+                        In = (string)pr["in"],
+                        Type = (string?)pr["type"],
+                        IsEnum = Static.Enums.Contains(xSchemaRef),
+                        Format = (string?)pr["format"],
+                        Required = (bool?)pr["required"],
+                        IsNullable = (bool)pr["x-nullable"],
+                        SchemaRef = ((string?)pr?["schema"]?["$ref"])?.Replace("#/definitions/", ""),
+                        XSchemaRef = xSchemaRef,
+                    };
                 })
                 .ToList(),
                 Response = response == null ? null : new PathMethodResponseModel
@@ -113,22 +119,34 @@ foreach (var _definition in Static.ModelsDefinitions)
     string className = allOf == null ? definition.Key : _definition.Key;
     var required = definition.Value["required"]?.AsArray().Select(p => p.GetValue<string>()).ToArray();
     var properties = definition.Value["properties"]?.AsObject()?.ToArray()
-        .Select(p => new PropertyModel
+        .Select(p =>
         {
-            Name = p.Key,
-            Required = required?.Contains(p.Key) ?? false,
-            Type = new PropertyTypeModel
+            var typeRef = (string?)p.Value["$ref"];
+            var typeRefType = typeRef?.Replace("#/definitions/", "");
+
+            var itemsTypeRef = (string?)p.Value["items"]?["$ref"];
+            var itemsTypeRefType = itemsTypeRef?.Replace("#/definitions/", "");
+            return new PropertyModel
             {
-                Type = (string)p.Value["type"],
-                Format = (string?)p.Value["format"],
-                Ref = (string?)p.Value["$ref"],
-            },
-            ItemsType = p.Value["items"] == null ? null : new PropertyTypeModel
-            {
-                Type = (string?)p.Value["items"]?["type"],
-                Format = (string?)p.Value["items"]?["format"],
-                Ref = (string?)p.Value["items"]?["$ref"],
-            },
+                Name = p.Key,
+                Required = required?.Contains(p.Key) ?? false,
+                Type = new PropertyTypeModel
+                {
+                    Type = (string)p.Value["type"],
+                    Format = (string?)p.Value["format"],
+                    Ref = typeRef,
+                    RefType = typeRefType,                    
+                    IsEnum = Static.Enums.Contains(typeRefType),
+                },
+                ItemsType = p.Value["items"] == null ? null : new PropertyTypeModel
+                {
+                    Type = (string?)p.Value["items"]?["type"],
+                    Format = (string?)p.Value["items"]?["format"],
+                    Ref = itemsTypeRef,
+                    RefType = itemsTypeRefType,
+                    IsEnum = Static.Enums.Contains(itemsTypeRefType),
+                },
+            };
         })
         ?.ToList();
     outputApi += @$"
@@ -233,8 +251,8 @@ foreach (var path in paths)
 
 outputApi += @$"
 
-class IraniViewApi {{
-  IraniViewApi({{
+class {name} {{
+  {name}({{
     this.baseUrl,
     this.log,
     this.headers,
@@ -247,14 +265,14 @@ class IraniViewApi {{
   final List<Function(http.Request)> requestInterceptors;
   final List<Function(http.StreamedResponse)> responseInterceptors;
 
-  static IraniViewApi create({{
+  static {name} create({{
     String? baseUrl,
     bool? log,
     Map<String, String>? headers,
     List<Function(http.Request)>? requestInterceptors,
     List<Function(http.StreamedResponse)>? responseInterceptors,
   }}) {{
-    return IraniViewApi(
+    return {name}(
       baseUrl: baseUrl ?? 'http://localhost:6000',
       log: log ?? true,
       headers: headers,
@@ -283,7 +301,7 @@ public static class Static
     public static KeyValuePair<string, JsonNode?>[] Definitions = new KeyValuePair<string, JsonNode?>[] { };
     public static KeyValuePair<string, JsonNode?>[] ModelsDefinitions = new KeyValuePair<string, JsonNode?>[] { };
     public static KeyValuePair<string, JsonNode?>[] EnumsDefinitions = new KeyValuePair<string, JsonNode?>[] { };
-    public static string[] Enums = new string[] { };
+    public static List<string> Enums = new();
 
     //public static List<PathModel> Paths { get; set; }
     //public static List<PathModel> Paths { get; set; }
@@ -297,7 +315,7 @@ class PathMethodModel
 {
     public string Name { get; set; }
     public string? Tag { get; set; }
-    public string OperationId { get; set; }
+    public string? OperationId { get; set; }
     public List<PathMethodParameterModel> Parameters { get; set; }
     public PathMethodResponseModel Response { get; set; }
 }
@@ -331,7 +349,7 @@ class PathMethodParameterModel
     public string? Format { get; set; }//date-time , double , int32
 
     public bool IsRef => SchemaRef.IsNotNullOrEmpty() || XSchemaRef.IsNotNullOrEmpty();
-    public bool IsEnum => Static.Enums.Contains(XSchemaRef);
+    public bool IsEnum { get; set; }
 
     public string GetName()
     {
@@ -400,10 +418,10 @@ class PropertyTypeModel
     public string? Format { get; set; }//date-time , double
     public string? Ref { get; set; }
     public bool IsRef => Ref?.Contains("#/definitions/") ?? false;
-    public string? RefType => Ref?.Replace("#/definitions/", "");
+    public string? RefType { get; set; }
     public bool IsArray => Type == "array";
     public bool IsModel => IsRef && !IsEnum;
-    public bool IsEnum => Static.Enums.Contains(RefType);
+    public bool IsEnum { get; set; }
     public bool IsDateTime => Type == "string" && Format == "date-time";
     public bool IsDouble => Type == "number" && (Format == "double" || Format == "float");
     public string GetType()

@@ -19,6 +19,7 @@ namespace Mrx.ApiClientGenerator
                 {
                     Id = id,
                     Name = txtProfileName.Text,
+                    ApiName = txtProfileApiName.Text,
                     Url = txtUrl.Text,
                     GeneratePath = txtGeneratePath.Text,
                     Language = (Language)cbbLanguage.SelectedItem,
@@ -37,6 +38,7 @@ namespace Mrx.ApiClientGenerator
                 if (value is null) return;
                 id = value.Id;
                 txtProfileName.Text = value.Name;
+                txtProfileApiName.Text = value.ApiName;
                 txtUrl.Text = value.Url;
                 txtGeneratePath.Text = value.GeneratePath;
                 cbbLanguage.SelectedItem = value.Language;

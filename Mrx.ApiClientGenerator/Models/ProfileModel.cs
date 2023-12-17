@@ -6,6 +6,7 @@ namespace Mrx.ApiClientGenerator.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string ApiName { get; set; }
         public string Url { get; set; }
         public string GeneratePath { get; set; }
         public Language Language { get; set; }
