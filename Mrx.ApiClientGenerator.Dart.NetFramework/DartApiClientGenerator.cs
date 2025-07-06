@@ -34,8 +34,9 @@ namespace Mrx.ApiClientGenerator.Dart.NetFramework
             string outputMain = $@"// ignore_for_file: non_constant_identifier_names, constant_identifier_names, curly_braces_in_flow_control_structures
 
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:irani_view/Swagger/{name}.swagger.enums.dart' as enums;
+import './{name}.swagger.enums.dart' as enums;
 
 extension DynamicExtension on dynamic {{
   double? toDouble() {{
@@ -176,7 +177,7 @@ int? {definition.Key}ToJson({definition.Key}? {definition.Key}) {{
                 outputMain += $@"
 class {className} {{
 {(properties.IsNull() ? "" : $"  {className}({{{properties?.Select(p => $"{(p.Required ? "required " : "")}this.{p.Name},").StringJoin("")}}});")}
-{properties?.Select(p => $"  final {p.GetType()}{(p.IsNullable ? "?" : "")} {p.Name};").StringJoin("\r\n")}
+{properties?.Select(p => $"  {p.GetType()}{(p.IsNullable ? "?" : "")} {p.Name};").StringJoin("\r\n")}
 
   factory {className}.fromJson(Map<String, dynamic> json) => {className}({properties?.Select(p =>
                 {
@@ -252,7 +253,7 @@ extension ${className}Extension on {className} {{
                     outputApiPaths += $@"
   Future<{method.Response.SchemaRef}?> {method.OperationId.Replace("_", "")}{method.Name.ToPascalCase()}({(hasParams ? $"{{{method.Parameters.Select(p => $"{(p.IsNullable ? "" : "required ")}{p.GetType()}? {p.GetName()}, ").StringJoin("")}}}" : "")}) async {{
     var headers = {headers};
-    var request = http.Request('{method.Name.ToUpper()}', Uri.parse('$baseUrl{path.Name}{(hasParamsInQuery ? $"?{method.Parameters.Where(p => p.In == "query").Select(p => $"{p.Name}=${p.GetName()}").StringJoin("&")}" : "")}'));
+    var request = http.Request('{method.Name.ToUpper()}', Uri.parse('$baseUrl{path.Name}{(hasParamsInQuery ? $"?{method.Parameters.Where(p => p.In == "query").Select(p => $"{p.Name}=${{{p.GetName()}??''}}").StringJoin("&")}" : "")}'));
     {(hasParamsInBody ? $"request.body = json.encode({method.Parameters.First(p => p.In == "body").GetName()});" : "")}
     request.headers.addAll(headers);
     if (this.headers != null) request.headers.addAll(this.headers!);
@@ -265,7 +266,7 @@ extension ${className}Extension on {className} {{
       var res = await response.stream.bytesToString();
       return {method.Response.SchemaRef}.fromJson(json.decode(res));
     }} else {{
-      if (log!) print(response.reasonPhrase);
+      printLog(response.reasonPhrase);
     }}
     return null;
   }}
@@ -303,6 +304,10 @@ class {name} {{
       requestInterceptors: requestInterceptors ?? [],
       responseInterceptors: responseInterceptors ?? [],
     );
+  }}
+
+  printLog(Object? object) {{
+    if (log!) if (kDebugMode) print(object);
   }}
 
   {outputApiPaths}

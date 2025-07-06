@@ -21,8 +21,8 @@ namespace Mrx.ApiClientGenerator.Helpers
         // baseUrl
         public static async Task<bool> Start(ProfileModel model)
         {
-            //try
-            //{
+            try
+            {
                 switch (model.Language)
                 {
                     case Language.TypeScript:
@@ -36,11 +36,11 @@ namespace Mrx.ApiClientGenerator.Helpers
                         //await SwaggerCodegen.GenerateDartClient(model);
                         break;
                 }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return false;
-            //}
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
             return true;
         }
 
@@ -62,6 +62,7 @@ namespace Mrx.ApiClientGenerator.Helpers
                    settings.TypeScriptGeneratorSettings.TypeScriptVersion = 3.5M;
                    settings.TypeScriptGeneratorSettings.DateTimeType = model.TypeScriptDateTimeType;
                    settings.TypeScriptGeneratorSettings.ExtensionCode = model.ExtensionCode;
+                   //settings.TypeScriptGeneratorSettings.SupportsStrictNullChecks = TypeScriptEnumStyle.;
                    //settings.TypeScriptGeneratorSettings.TemplateFactory = model.ExtensionCode;
                    settings.TypeScriptGeneratorSettings.TemplateDirectory = Path.Combine(Application.StartupPath, "Templates");
                    //settings.TypeScriptGeneratorSettings.ExtensionCode = @"C:\Users\MasoudMahdian\Desktop\my-app-react-ts\src\Apis\BaseClass.tsx";
@@ -70,12 +71,14 @@ namespace Mrx.ApiClientGenerator.Helpers
                    // import { BaseClass } from './BaseClass';
 
                    //settings.TypeScriptGeneratorSettings.url = TypeScriptDateTimeType.String;
+                   //settings.sup = TypeScriptTemplate.Axios;
                    settings.Template = TypeScriptTemplate.Axios;
                    settings.ClientBaseClass = model.ClientBaseClass;
                    //settings.ConfigurationClass = "Apis/BaseClass.ts";
                    settings.UseGetBaseUrlMethod = model.UseGetBaseUrlMethod;
                    settings.UseTransformOptionsMethod = model.UseTransformOptionsMethod;
                    settings.UseTransformResultMethod = model.UseTransformResultMethod;
+                   settings.WrapDtoExceptions = true;
 
                    document.Host = model.BaseUrl;
 

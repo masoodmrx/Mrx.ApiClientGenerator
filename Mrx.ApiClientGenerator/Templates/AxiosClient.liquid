@@ -17,7 +17,7 @@
 {%-     if HasBaseClass %}
         super({% if HasConfigurationClass %}configuration{% endif %});
 {%-     endif %}
-        this.instance = instance ? instance : axios.create();
+        this.instance = instance ? instance : {{ BaseClass }}.createAxiosInstance();
 {%-     if UseGetBaseUrlMethod %}
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : this.getBaseUrl("{{ BaseUrl }}");
 {%-     else %}
@@ -36,7 +36,7 @@
         {% template Client.RequestUrl %}
 
 {%     if operation.HasBody -%}
-        {% template Client.RequestBody %}
+  {% template Client.RequestBody %}
 
 {%     endif -%}
         let options_: AxiosRequestConfig = {
