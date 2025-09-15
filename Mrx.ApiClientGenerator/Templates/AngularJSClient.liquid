@@ -21,9 +21,9 @@
         this.http = $http;
         this.q = $q;
 {%-     if UseGetBaseUrlMethod -%}
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : this.getBaseUrl("{{ BaseUrl }}");
+        this.baseUrl = baseUrl ?? this.getBaseUrl("{{ BaseUrl }}");
 {%-     else -%}
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "{{ BaseUrl }}";
+        this.baseUrl = baseUrl ?? "{{ BaseUrl }}";
 {%-     endif -%}
     }
 {%- endif -%}
@@ -55,7 +55,7 @@
 {%-    for parameter in operation.HeaderParameters -%}
                 "{{ parameter.Name }}": {{ parameter.VariableName }} !== undefined && {{ parameter.VariableName }} !== null ? "" + {{ parameter.VariableName }} : "",
 {%     endfor -%}
-{%     if operation.HasContent or operation.ConsumesFormUrlEncoded -%}
+{%     if operation.HasContent or operation.ConsumesOnlyFormUrlEncoded -%}
                 "Content-Type": "{{ operation.Consumes }}",
 {%     endif -%}
 {%     if operation.HasResultType and operation.HasAcceptHeaderParameterParameter == false -%}

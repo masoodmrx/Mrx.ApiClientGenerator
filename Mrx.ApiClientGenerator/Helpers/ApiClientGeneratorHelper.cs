@@ -1,10 +1,12 @@
 ﻿using Mrx.ApiClientGenerator.Dart.NetFramework;
 using Mrx.ApiClientGenerator.Models;
+using NJsonSchema.CodeGeneration;
 using NJsonSchema.CodeGeneration.TypeScript;
 using NSwag;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.TypeScript;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -65,6 +67,8 @@ namespace Mrx.ApiClientGenerator.Helpers
                    //settings.TypeScriptGeneratorSettings.SupportsStrictNullChecks = TypeScriptEnumStyle.;
                    //settings.TypeScriptGeneratorSettings.TemplateFactory = model.ExtensionCode;
                    settings.TypeScriptGeneratorSettings.TemplateDirectory = Path.Combine(Application.StartupPath, "Templates");
+                   //settings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Class;
+
                    //settings.TypeScriptGeneratorSettings.ExtensionCode = @"C:\Users\MasoudMahdian\Desktop\my-app-react-ts\src\Apis\BaseClass.tsx";
                    //settings.TypeScriptGeneratorSettings.Namespace = "Apis/BaseClass.ts";
                    //settings.TypeScriptGeneratorSettings.ExtendedClasses = new[] { "Apis/BaseClass.ts" };
@@ -78,7 +82,10 @@ namespace Mrx.ApiClientGenerator.Helpers
                    settings.UseGetBaseUrlMethod = model.UseGetBaseUrlMethod;
                    settings.UseTransformOptionsMethod = model.UseTransformOptionsMethod;
                    settings.UseTransformResultMethod = model.UseTransformResultMethod;
+                   settings.UseAbortSignal = true;
+                   //settings.UseSingletonProvider = true;
                    settings.WrapDtoExceptions = true;
+                   //settings.CodeGeneratorSettings. = true;
 
                    document.Host = model.BaseUrl;
 
