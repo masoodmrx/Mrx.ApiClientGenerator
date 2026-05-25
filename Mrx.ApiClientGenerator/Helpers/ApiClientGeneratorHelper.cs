@@ -52,49 +52,50 @@ namespace Mrx.ApiClientGenerator.Helpers
         }
         private async static Task GenerateTypeScriptClient(ProfileModel model)
         {
-            GenerateClient(
-               document: await OpenApiDocument.FromUrlAsync(model.Url),
-               generatePath: model.GeneratePath,
-               generateCode: (OpenApiDocument document) =>
-               {
-                   var settings = new TypeScriptClientGeneratorSettings();
+            foreach (var generatePath in model.GeneratePath.Split(','))
+                GenerateClient(
+                   document: await OpenApiDocument.FromUrlAsync(model.Url),
+                   generatePath: generatePath,
+                   generateCode: (OpenApiDocument document) =>
+                   {
+                       var settings = new TypeScriptClientGeneratorSettings();
 
-                   //var a = settings.TypeScriptGeneratorSettings.TemplateDirectory;
-                   settings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;
-                   settings.TypeScriptGeneratorSettings.TypeScriptVersion = 3.5M;
-                   settings.TypeScriptGeneratorSettings.DateTimeType = model.TypeScriptDateTimeType;
-                   settings.TypeScriptGeneratorSettings.ExtensionCode = model.ExtensionCode;
-                   //settings.TypeScriptGeneratorSettings.SupportsStrictNullChecks = TypeScriptEnumStyle.;
-                   //settings.TypeScriptGeneratorSettings.TemplateFactory = model.ExtensionCode;
-                   settings.TypeScriptGeneratorSettings.TemplateDirectory = Path.Combine(Application.StartupPath, "Templates");
-                   //settings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Class;
+                       //var a = settings.TypeScriptGeneratorSettings.TemplateDirectory;
+                       settings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;
+                       settings.TypeScriptGeneratorSettings.TypeScriptVersion = 3.5M;
+                       settings.TypeScriptGeneratorSettings.DateTimeType = model.TypeScriptDateTimeType;
+                       settings.TypeScriptGeneratorSettings.ExtensionCode = model.ExtensionCode;
+                       //settings.TypeScriptGeneratorSettings.SupportsStrictNullChecks = TypeScriptEnumStyle.;
+                       //settings.TypeScriptGeneratorSettings.TemplateFactory = model.ExtensionCode;
+                       settings.TypeScriptGeneratorSettings.TemplateDirectory = Path.Combine(Application.StartupPath, "Templates");
+                       //settings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Class;
 
-                   //settings.TypeScriptGeneratorSettings.ExtensionCode = @"C:\Users\MasoudMahdian\Desktop\my-app-react-ts\src\Apis\BaseClass.tsx";
-                   //settings.TypeScriptGeneratorSettings.Namespace = "Apis/BaseClass.ts";
-                   //settings.TypeScriptGeneratorSettings.ExtendedClasses = new[] { "Apis/BaseClass.ts" };
-                   // import { BaseClass } from './BaseClass';
+                       //settings.TypeScriptGeneratorSettings.ExtensionCode = @"C:\Users\MasoudMahdian\Desktop\my-app-react-ts\src\Apis\BaseClass.tsx";
+                       //settings.TypeScriptGeneratorSettings.Namespace = "Apis/BaseClass.ts";
+                       //settings.TypeScriptGeneratorSettings.ExtendedClasses = new[] { "Apis/BaseClass.ts" };
+                       // import { BaseClass } from './BaseClass';
 
-                   //settings.TypeScriptGeneratorSettings.url = TypeScriptDateTimeType.String;
-                   //settings.sup = TypeScriptTemplate.Axios;
-                   settings.Template = TypeScriptTemplate.Axios;
-                   settings.ClientBaseClass = model.ClientBaseClass;
-                   //settings.ConfigurationClass = "Apis/BaseClass.ts";
-                   settings.UseGetBaseUrlMethod = model.UseGetBaseUrlMethod;
-                   settings.UseTransformOptionsMethod = model.UseTransformOptionsMethod;
-                   settings.UseTransformResultMethod = model.UseTransformResultMethod;
-                   settings.UseAbortSignal = true;
-                   //settings.UseSingletonProvider = true;
-                   settings.WrapDtoExceptions = true;
-                   //settings.CodeGeneratorSettings. = true;
+                       //settings.TypeScriptGeneratorSettings.url = TypeScriptDateTimeType.String;
+                       //settings.sup = TypeScriptTemplate.Axios;
+                       settings.Template = TypeScriptTemplate.Axios;
+                       settings.ClientBaseClass = model.ClientBaseClass;
+                       //settings.ConfigurationClass = "Apis/BaseClass.ts";
+                       settings.UseGetBaseUrlMethod = model.UseGetBaseUrlMethod;
+                       settings.UseTransformOptionsMethod = model.UseTransformOptionsMethod;
+                       settings.UseTransformResultMethod = model.UseTransformResultMethod;
+                       settings.UseAbortSignal = true;
+                       //settings.UseSingletonProvider = true;
+                       settings.WrapDtoExceptions = true;
+                       //settings.CodeGeneratorSettings. = true;
 
-                   document.Host = model.BaseUrl;
+                       document.Host = model.BaseUrl;
 
-                   var generator = new TypeScriptClientGenerator(document, settings);
-                   var code = generator.GenerateFile();
+                       var generator = new TypeScriptClientGenerator(document, settings);
+                       var code = generator.GenerateFile();
 
-                   return code;
-               }
-           );
+                       return code;
+                   }
+               );
         }
 
         private async static Task GenerateCSharpClient(ProfileModel model)
