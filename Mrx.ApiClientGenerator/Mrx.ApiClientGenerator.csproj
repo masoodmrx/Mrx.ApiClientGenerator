@@ -311,9 +311,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\FileModel.cs" />
-    <Compile Include="Models\Language.cs" />
-    <Compile Include="Models\ProfileModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ApiClientGeneratorControl.resx">
@@ -411,6 +408,10 @@
     <ProjectReference Include="..\Mrx.ApiClientGenerator.Dart.NetFramework\Mrx.ApiClientGenerator.Dart.NetFramework.csproj">
       <Project>{29bbac6b-2f74-426d-b0d9-1703d274be43}</Project>
       <Name>Mrx.ApiClientGenerator.Dart.NetFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mrx.ApiClientGenerator.Core\Mrx.ApiClientGenerator.Core.csproj">
+      <Project>{5CAF7837-920F-4246-9E80-407DC771571C}</Project>
+      <Name>Mrx.ApiClientGenerator.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
